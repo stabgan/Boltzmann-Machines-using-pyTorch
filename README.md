@@ -24,7 +24,7 @@ Hidden Layer  (100 hidden units)
 | CD steps (k) | 10 |
 | Loss metric | Mean Absolute Error |
 
-## Datasets
+## Dataset
 
 Included under `Boltzmann_Machines/`:
 
@@ -33,38 +33,53 @@ Included under `Boltzmann_Machines/`:
 | MovieLens 100K | 943 | 1,682 | 100,000 |
 | MovieLens 1M | 6,040 | 3,952 | 1,000,209 |
 
-Training/testing uses the ML-100K `u1.base` / `u1.test` split.
+Training and testing uses the ML-100K `u1.base` / `u1.test` split.
 
-## Dependencies
+## 🛠 Tech Stack
+
+| | Technology | Purpose |
+|---|-----------|---------|
+| 🐍 | Python 3 | Runtime |
+| 🔥 | PyTorch | Tensor ops and model |
+| 🔢 | NumPy | Data preprocessing |
+| 🐼 | pandas | CSV loading |
+
+## Installation
 
 ```bash
 pip install torch numpy pandas
 ```
 
-## How to Run
+## Usage
 
 ```bash
 cd Boltzmann_Machines
 python rbm.py
 ```
 
-Prints training loss per epoch and a final test loss.
+Prints training loss per epoch and a final test loss. The script auto-detects CUDA and runs on GPU when available.
 
-## Tech Stack
+## Modernization Changelog
 
-| | Technology |
-|---|-----------|
-| 🐍 | Python 3 |
-| 🔥 | PyTorch |
-| 🔢 | NumPy |
-| 🐼 | pandas |
+The original code was updated to follow current best practices:
 
-## Known Issues
+- Removed unused ML-1M dataset loading (movies, users, ratings DataFrames were loaded but never used)
+- Replaced deprecated `torch.FloatTensor()` with `torch.tensor(..., dtype=torch.float32)`
+- Added `torch.no_grad()` context manager around test/inference loop
+- Added `if __name__ == "__main__"` guard
+- Added automatic GPU/CUDA device detection
+- Replaced hardcoded file paths with `os.path` relative to script location
+- Added error handling for missing data files
+- Added `.clone()` to avoid in-place modification of training data during CD sampling
+- Extracted configuration into named constants
+- Added docstrings and type hints
+- Modernized print statements to f-strings
+- Renamed `train()` method to `update_weights()` for clarity
 
-- **No GPU support** — all tensors run on CPU; no `.to(device)` calls.
-- **ML-1M loaded but unused** — the 1M dataset is read at startup but not used in training or evaluation.
-- **Hardcoded paths** — dataset paths are relative; the script must be run from inside `Boltzmann_Machines/`.
-- **Repo naming** — titled "Boltzmann Machines" but implements a single-layer RBM, not a Deep Boltzmann Machine.
+## ⚠️ Known Issues
+
+- The ML-1M dataset is included in the repo but not used by the model — it's kept for reference.
+- The RBM uses manual weight updates (not `nn.Module` / autograd) which is intentional for the CD algorithm but means no optimizer or learning-rate scheduler is used.
 
 ## Reference
 
